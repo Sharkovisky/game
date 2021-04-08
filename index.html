@@ -27,7 +27,7 @@
                 <div class="col text-center" v-if="!nao_iniciado">
                     <button @click="atacar">Atacar</button>
                     <button @click="curar">Curar</button>
-                    <button @click="nao_iniciado = true">Desistir</button>
+                    <button @click="reset">Desistir</button>
                 </div>
                 <div></div>
             </div>
@@ -54,6 +54,12 @@
                 monstro : "Monstro",
             },
             methods : {
+                reset : function(){
+                    this.nao_iniciado = true
+                    this.vida = 100
+                    this.vida_monstro = 100
+                    this.historico = []
+                },
                 ataque_aleatorio : function(){
                     return Math.round(Math.random()*10);
                 },
@@ -63,6 +69,9 @@
                 verificar_vida : function(){
                     if(this.vida <= 0){
                         this.historico.push({ msg : "Você morreu :("})
+                        alert("Você morreu :(");
+                    } else if (this.vida_monstro <=0 ){
+                        this.historico.push({ msg : "O monstro morreu! Você venceu"})
                     }
                 },
                 atacar : function(){
@@ -86,8 +95,11 @@
                     this.adicionar_ao_historico(this.monstro, this.voce, acao, this.ataque)
                 },
                 curar : function(){
-                    cura = Math.round(Math.random()*5)
+                    cura = Math.round(Math.random()*20)
                     this.vida += cura
+                    msg = `${this.voce} curou ${cura}`
+                    this.historico.push({ msg : msg })
+                    this.contra_ataque()
                 },
                 adicionar_ao_historico : function(atacante, atacado, acao, ataque){
                     msg = `${atacante} ${acao} ${atacado} com ${ataque} de dano.`
