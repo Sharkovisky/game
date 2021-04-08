@@ -52,6 +52,9 @@
                 historico : [],
             },
             methods : {
+                ataque_aleatorio(){
+                    this.ataque += Math.round(Math.random()*5)
+                },
                 atacar : function(){
                     this.vida_monstro -= this.ataque,
                     voce = "Você"
