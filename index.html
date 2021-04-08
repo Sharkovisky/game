@@ -46,31 +46,51 @@
             el: '#app',
             data : {
                 nao_iniciado : true,
-                ataque : 0,
+                ataque : 5,
                 vida : 100,
                 vida_monstro : 100,
                 historico : [],
+                voce : "Você",
+                monstro : "Monstro",
             },
             methods : {
-                ataque_aleatorio(){
-                    this.ataque += Math.round(Math.random()*5)
+                ataque_aleatorio : function(){
+                    return Math.round(Math.random()*10);
+                },
+                chance_de_erro : function(){
+                    return Math.random();
+                },
+                verificar_vida : function(){
+                    if(this.vida <= 0){
+                        this.historico.push({ msg : "Você morreu :("})
+                    }
                 },
                 atacar : function(){
-                    this.vida_monstro -= this.ataque,
-                    voce = "Você"
-                    monstro = "Monstro"
-                    acao = "atacou"
-                    if(this.ataque == 0){
+                    if(this.chance_de_erro() > 0.3){
+                        this.ataque = this.ataque_aleatorio();
+                        this.vida_monstro -= this.ataque
+                        acao = "atacou"
+                    } else {
+                        this.ataque = 0
                         acao = "errou"
                     }
-                    this.adicionar_ao_historico(voce, monstro, acao)
+                    this.color = 'blue'
+                    this.adicionar_ao_historico(this.voce, this.monstro, acao, this.ataque)
+                    this.contra_ataque()
+                    this.verificar_vida()
+                },
+                contra_ataque: function(){
+                    this.ataque = this.ataque_aleatorio();
+                    this.vida -= this.ataque
+                    acao = "contra-atacou"
+                    this.adicionar_ao_historico(this.monstro, this.voce, acao, this.ataque)
                 },
                 curar : function(){
                     cura = Math.round(Math.random()*5)
                     this.vida += cura
                 },
-                adicionar_ao_historico : function(atacante, atacado, acao){
-                    msg = `${atacante} ${acao} ${atacado}.`
+                adicionar_ao_historico : function(atacante, atacado, acao, ataque){
+                    msg = `${atacante} ${acao} ${atacado} com ${ataque} de dano.`
                     this.historico.push({msg: msg})
                 }
             },
