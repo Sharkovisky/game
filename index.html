@@ -35,10 +35,10 @@
                 </div>
                 <div></div>
             </div>
-            <div class="border col text-center p-2" id="app">
+            <div class="border col text-center p-2">
                 <h3>Histórico de jogadas</h3>
-                <ul v-for="jogada in historico" :class="{'bg-primary': jogada.jogador_classe, 'bg-danger': jogada.monstro_classe, 'bg-success': jogada.cura_classe}">
-                    <li>{{ jogada.msg }}</li>
+                <ul v-for="jogada in historico" class=" list-group">
+                    <li class="list-group-item text-light" :class="{'bg-primary': jogada.jogador_classe, 'bg-danger': jogada.monstro_classe, 'bg-success': jogada.cura_classe}">{{ jogada.msg }}</li>
                 </ul>
             </div>
         </div>
@@ -106,21 +106,24 @@
                 curar : function(){
                     cura = Math.round(Math.random()*20)
                     this.vida += cura
-                    msg = `${this.voce} curou ${cura}`
-                    this.historico.unshift({ msg: msg })
+                    acao = "curou"
+                    this.adicionar_ao_historico(this.voce, this.monstro, acao, cura)
                     this.contra_ataque()
                     this.verificar_vida()
                 },
                 adicionar_ao_historico : function(atacante, atacado, acao, ataque){
-                    msg = `${atacante} ${acao} ${atacado} com ${ataque} de dano.`
                     jogador_classe = false
                     monstro_classe = false
                     cura_classe = false
-                    if(atacante == "Você"){
-                        jogador_classe = true
-                    } else if(atacante == "Monstro"){
-                        monstro_classe = true
-                    } else if(acao == "cura"){
+                    if(acao == "atacou" || acao =="contra-atacou" || acao == "errou"){
+                        msg = `${atacante} ${acao} ${atacado} com ${ataque} de dano.`
+                        if(atacante == "Você"){
+                            jogador_classe = true
+                        } else if(atacante == "Monstro"){
+                            monstro_classe = true
+                    }
+                    }else if(acao == "curou"){
+                        msg =`${this.voce} curou ${ataque}`
                         cura_classe = true
                     }
                     this.historico.unshift({msg: msg, jogador_classe, monstro_classe, cura_classe})
