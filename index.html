@@ -9,17 +9,17 @@
 <body>
     <div class="container" id="app">
         <h1 class="col text-center m-5">Matador de monstro</h1>
-        <div class="row">
+        <div class="row m-2">
             <div class="col text-center">
                 <h2>Você</h2>
                 <div class="progress">
-                    <div class="progress-bar bg-success" role="progressbar" v-bind:style="{width: vida +'%'}" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ vida }}</div>
+                    <div class="progress-bar bg-success" role="progressbar" :style="{width: vida +'%'}" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ vida }}</div>
                 </div>
             </div>
             <div class="col text-center">
                 <h2>Monstro</h2>
                 <div class="progress">
-                    <div class="progress-bar bg-danger" role="progressbar" v-bind:style="{width: vida_monstro +'%'}" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ vida_monstro }}</div>
+                    <div class="progress-bar bg-danger" role="progressbar" :style="{width: vida_monstro +'%'}" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">{{ vida_monstro }}</div>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
             </div>
             <div class="border col text-center p-2" id="app">
                 <h3>Histórico de jogadas</h3>
-                <ul v-for="jogada in historico">
+                <ul v-for="jogada in historico" :class="{'bg-primary': jogada.jogador_classe, 'bg-danger': jogada.monstro_classe, 'bg-success': jogada.cura_classe}">
                     <li>{{ jogada.msg }}</li>
                 </ul>
             </div>
@@ -72,10 +72,15 @@
                 },
                 verificar_vida : function(){
                     if(this.vida <= 0){
-                        this.historico.push({ msg : "Você morreu :("})
-                        alert("Você morreu :(");
+                        this.vida = 0
+                        this.historico.unshift({ msg : "Você morreu :("})
+                        confirm("Você morreu :(");
                     } else if (this.vida_monstro <=0 ){
-                        this.historico.push({ msg : "O monstro morreu! Você venceu"})
+                        this.vida_monstro = 0
+                        this.historico.unshift({ msg : "O monstro morreu! Você venceu"})
+                        confirm("O monstro morreu! Você venceu");
+                    } else if (this.vida > 100){
+                        this.vida = 100
                     }
                 },
                 atacar : function(){
@@ -102,13 +107,24 @@
                     cura = Math.round(Math.random()*20)
                     this.vida += cura
                     msg = `${this.voce} curou ${cura}`
-                    this.historico.push({ msg : msg })
+                    this.historico.unshift({ msg: msg })
                     this.contra_ataque()
+                    this.verificar_vida()
                 },
                 adicionar_ao_historico : function(atacante, atacado, acao, ataque){
                     msg = `${atacante} ${acao} ${atacado} com ${ataque} de dano.`
-                    this.historico.push({msg: msg})
-                }
+                    jogador_classe = false
+                    monstro_classe = false
+                    cura_classe = false
+                    if(atacante == "Você"){
+                        jogador_classe = true
+                    } else if(atacante == "Monstro"){
+                        monstro_classe = true
+                    } else if(acao == "cura"){
+                        cura_classe = true
+                    }
+                    this.historico.unshift({msg: msg, jogador_classe, monstro_classe, cura_classe})
+                },
             },
         })
     </script>
